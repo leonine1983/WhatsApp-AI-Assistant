@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+
 from .models import Contacts
 
 def send_msg(contato, msg):
@@ -7,17 +9,14 @@ def send_msg(contato, msg):
     driver.get('https://web.whatsapp.com')
 
     # Aguardar o usuário  scanear o codigo
-    input("Pressione Enter após scanear o código QR")
-    search_box = driver.find_element()
+    input("Pressione Enter após scanear o código QR")    
+    search_box = driver.find_element(By.XPATH, '//div[@contenteditable="true"][@data-tab="3"]')
+    search_box.click
 
     pass
 
 # Create your views here.
 """
-# enviar_mensagens.py
-from selenium import webdriver
-
-from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from time import sleep
 import django
