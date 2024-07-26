@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <title>Perfil de Mensagem</title>
+    <style>
+        #loading {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+        #loading img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Criar Mensagem</h1>
+    <form id="messageForm" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ message_form.as_p }}
+        <h2>Selecione os Contatos</h2>
+        {{ contacts_form.as_p }}
+        <button type="submit">Preparar Mensagem</button>
+    </form>
+
+    <div id="loading">
+        <img src="{% static 'loading.gif' %}" alt="Carregando...">
+        <p id="statusMessage">Processando...</p>
+    </div>
+
+    <script>
+        document.getElementById('messageForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var form = event.target;
+
+            var formData = new FormData(form);
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', form.action, true);
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    document.getElementById('loading').style.display = 'none';
+                    if (response.status === 'completed') {
+                        window.location.href = '{% url "perfil_mensage" %}';
+                    } else if (response.status.startsWith('error')) {
+                        alert('Ocorreu um erro: ' + response.status);
+                    }
+                } else {
+                    alert('Erro ao enviar a mensagem.');
+                }
+            };
+
+            xhr.onerror = function() {
+                alert('Erro de conexão.');
+            };
+
+            xhr.send(formData);
+            document.getElementById('loading').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
